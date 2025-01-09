@@ -12,16 +12,17 @@ import (
 	"context"
 
 	"github.com/spyzhov/chttp"
-	"github.com/spyzhov/chttp-logger-zap"
+	logger "github.com/spyzhov/chttp-logger-zap"
 	"github.com/spyzhov/chttp/middleware"
+	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
 func main() {
 	client := chttp.NewJSON(nil)
 	client.With(
-		middleware.Trace(chttp_logger_zap.New("client", zapcore.InfoLevel, zapcore.ErrorLevel)),
-		middleware.Debug(true, chttp_logger_zap.New("client", zapcore.DebugLevel, zapcore.DebugLevel)),
+		middleware.Trace(logger.New(logger.WithLogger(zap.L()), logger.WithInfoLevel(zapcore.InfoLevel))),
+		middleware.Debug(true, logger.New(logger.WithLogger(zap.L()), logger.WithErrorLevel(zapcore.DebugLevel))),
 	)
 	var result RandomUsers
 	_ = client.GET(context.Background(), "https://randomuser.me/api/?results=10", nil, &result)

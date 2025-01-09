@@ -5,6 +5,7 @@ import (
 
 	"github.com/spyzhov/chttp"
 	"github.com/spyzhov/chttp/middleware"
+	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
 
@@ -22,8 +23,8 @@ type RandomUsers struct {
 func ExampleLogger() {
 	client := chttp.NewJSON(nil)
 	client.With(
-		middleware.Trace(New("client", zapcore.InfoLevel, zapcore.ErrorLevel)),
-		middleware.Debug(true, New("client", zapcore.DebugLevel, zapcore.DebugLevel)),
+		middleware.Trace(New(WithLogger(zap.L()), WithInfoLevel(zapcore.InfoLevel))),
+		middleware.Debug(true, New(WithLogger(zap.L()), WithErrorLevel(zapcore.DebugLevel))),
 	)
 	var result RandomUsers
 	_ = client.GET(context.Background(), "https://randomuser.me/api/?results=10", nil, &result)
