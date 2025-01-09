@@ -16,7 +16,10 @@ var _ middleware.Logger = (*EmbeddedLogger)(nil)
 
 func NewEmbeddedLogger(client string) *EmbeddedLogger {
 	return &EmbeddedLogger{
-		Logger: *New(client, zapcore.DebugLevel, zapcore.WarnLevel).(*Logger),
+		Logger: *New(
+			WithLogger(zap.L().With(zap.String("client", client))),
+			WithInfoLevel(zapcore.InfoLevel),
+		).(*Logger),
 	}
 }
 

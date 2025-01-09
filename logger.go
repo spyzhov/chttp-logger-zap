@@ -15,12 +15,16 @@ type Logger struct {
 	Error  zapcore.Level
 }
 
-func New(client string, lvl, err zapcore.Level) middleware.Logger {
-	return &Logger{
-		Logger: zap.L().With(zap.String("client", client)),
-		Info:   lvl,
-		Error:  err,
+func New(options ...Option) middleware.Logger {
+	log := &Logger{
+		Logger: zap.NewNop(),
+		Info:   zapcore.DebugLevel,
+		Error:  zapcore.ErrorLevel,
 	}
+	for _, o := range options {
+		o(log)
+	}
+	return log
 }
 
 func (l *Logger) WithContext(_ context.Context) middleware.Logger {
